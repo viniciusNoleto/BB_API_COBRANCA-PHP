@@ -1,0 +1,20 @@
+{
+    "name": "vinicius-noleto/bb-api-cobranca",
+    "description": "PHP Class Focused on BB Cobrança API",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Vinicius Nolêto de Araújo",
+            "email": "noleto.vinicius.a@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ViniciusNoleto\\BB_API_COBRANCA\\":"app/"
+        }
+    },
+    "require": {
+        "php":">=8.0"
+    }
+}
