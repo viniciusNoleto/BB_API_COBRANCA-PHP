@@ -15,8 +15,8 @@
         private $PIX_KEY = '';
         private $CONVENIO = '';
         private $COMPANY_ID = '';
-        private $AMBIENT = '';
         private $SEGMENT = '';
+        private $AMBIENT = '';
 
 
 
@@ -118,18 +118,16 @@
             $this->COMPANY_ID = $COMPANY_ID;
         }
 
-
-        private function setSegment(String $AMBIENT) {
-            if($AMBIENT != 'T' && $AMBIENT != 'P') throw new \Exception('Wrong Ambient', 523);
-
-            $this->AMBIENT = $AMBIENT;
-        }
-
-
-        private function setAmbient(String $SEGMENT) {
+        private function setSegment(String $SEGMENT) {
             if($SEGMENT > 9 || $SEGMENT < 1 || $SEGMENT == 8) throw new \Exception('Wrong Ambient', 523);
 
             $this->SEGMENT = $SEGMENT;
+        }
+        
+        private function setAmbient(String $AMBIENT) {
+            if($AMBIENT != 'T' && $AMBIENT != 'P') throw new \Exception('Wrong Ambient', 523);
+
+            $this->AMBIENT = $AMBIENT;
         }
 
 
@@ -227,11 +225,11 @@
                         ['cpfDevedor' => $debt_info['Cobrado_ID']]:
                         ['cnpjDevedor' => $debt_info['Cobrado_ID']],
 
-                    isset($debt_info['Cobrado_Contato']) ? [
+                    isset($debt_info['Cobrado_Contact']) ? [
                         'codigoPaisTelefoneDevedor' => 55,
     
-                        'dddTelefoneDevedor' => substr($debt_info['Cobrado_Contato'], 0, 2),
-                        'numeroTelefoneDevedor' => substr($debt_info['Cobrado_Contato'], 2)
+                        'dddTelefoneDevedor' => substr($debt_info['Cobrado_Contact'], 0, 2),
+                        'numeroTelefoneDevedor' => substr($debt_info['Cobrado_Contact'], 2)
                     ]:[]
                 )
             );
