@@ -1,6 +1,6 @@
 # <img src="https://github.com/viniciusNoleto/BB_API_COBRANCA-PHP/assets/85528669/b1ef041d-9eee-4620-bf52-bce425b6b5f9" alt="BB-PHP" height="30px" align="center"> **API de Cobrança do Banco do Brasil**
 
-## **Utilização / Utilization**
+## **Utilization**
 
 ```php
 
