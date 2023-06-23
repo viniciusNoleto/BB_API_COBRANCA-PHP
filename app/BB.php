@@ -175,8 +175,21 @@
             return $header.self::getBarCodeMod10ValidateNumber($header.$body).$body;
         }
 
+        private function validateDebtInfo(Array &$debt_info, Array $needed): Void {
+            foreach($needed as $need) 
+                if(!isset($debt_info[$need])) 
+                    throw new \Exception('Incompleted debt info, missing '.$need, 523);
+        }
 
-        private function SEND(String $link, String $method, String $title, Array $reque_debt, Int $exp = 0) {
+        
+        private function SEND(String $link, String $method, String $title, Array $debt_info, Int $exp = 0) {
+            $this->validateDebtInfo($debt_info, [
+                'Via_Cobranca_Value',
+                'Via_Cobranca_ID',
+                'Cobrado_Name',
+                'Cobrado_ID'
+            ]);
+
             return Api::RUN(
 
                 $this->getAmbientRoute().
@@ -196,37 +209,45 @@
                     [
                         'numeroConvenio' => $this->CONVENIO, 
     
-                        'indicadorCodigoBarras' => 'N',
-                        'codigoGuiaRecebimento' => self::getBarCode($reque_debt['Valor'], $reque_debt['Debt_ID'], $this->COMPANY_ID),
-    
-                        'codigoPaisTelefoneDevedor' => 55,
-    
-                        'dddTelefoneDevedor' => substr($reque_debt['Contato'], 0, 2),
-                        'numeroTelefoneDevedor' => substr($reque_debt['Contato'], 2),
-                        'nomeDevedor' => $reque_debt['Nome'],
+                        'indicadorCodigoBarras' => 'N', // TODO: Mudar para 'S' no futuro
+                        'codigoGuiaRecebimento' => self::getBarCode($debt_info['Via_Cobranca_Value'], $debt_info['Via_Cobranca_ID'], $this->COMPANY_ID),
+
+                        'nomeDevedor' => $debt_info['Cobrado_Name'],
     
                         'codigoSolicitacaoBancoCentralBrasil' => $this->PIX_KEY,
 
                         'descricaoSolicitacaoPagamento' => $title,
                         
-                        'valorOriginalSolicitacao' => floatval($reque_debt['Valor']),
+                        'valorOriginalSolicitacao' => floatval($debt_info['Via_Cobranca_Value']),
     
                         'quantidadeSegundoExpiracao' => $exp
                     ],
                     
-                    strlen($reque_debt['Reque_ID']) == 11 ? 
-                        ['cpfDevedor' => $reque_debt['Reque_ID']]:
-                        ['cnpjDevedor' => $reque_debt['Reque_ID']]
+                    strlen($debt_info['Cobrado_ID']) == 11 ? 
+                        ['cpfDevedor' => $debt_info['Cobrado_ID']]:
+                        ['cnpjDevedor' => $debt_info['Cobrado_ID']],
+
+                    isset($debt_info['Cobrado_Contato']) ? [
+                        'codigoPaisTelefoneDevedor' => 55,
+    
+                        'dddTelefoneDevedor' => substr($debt_info['Cobrado_Contato'], 0, 2),
+                        'numeroTelefoneDevedor' => substr($debt_info['Cobrado_Contato'], 2)
+                    ]:[]
                 )
             );
         }
 
-        private function RECIVE(String $link, String $method, Array $reque_debt) {
+        private function RECIVE(String $link, String $method, Array $debt_info) {
+            $this->validateDebtInfo($debt_info, [
+                'Cobrado_ID',
+                'Via_Cobranca_Value'
+            ]);
+
             return Api::RUN(
                 self::getAmbientRoute().self::ARRECADACAO_ROUTE.$link.
                     '?gw-dev-app-key='.$this->APP_KEY.
                     '&numeroConvenio='.$this->CONVENIO.
-                    '&codigoGuiaRecebimento='.$reque_debt['Debt_ID'],
+                    '&codigoGuiaRecebimento='.self::getBarCode($debt_info['Via_Cobranca_Value'], $debt_info['Via_Cobranca_ID'], $this->COMPANY_ID),
                 $method,
                 [
                     'Authorization: Bearer '.self::getOAuth('pix.arrecadacao-info'),
@@ -248,7 +269,7 @@
                     if(isset($response['erros'])){
                         if($response['erros'][0]['mensagem'] == 'Erro Interno do Servidor') continue;
 
-                        throw new \Exception('Problema no Pipeline do Pix: '.($response['erros'][0]['mensagem'] ?? 'undefined'), 500);
+                        throw new \Exception('Problema no Pipeline do Pix: '.($response['erros'][0]['mensagem'] ?? 'undefined'), 523);
                     } 
 
                     return $response;
@@ -262,31 +283,50 @@
 
         }
 
-        public function createPIX(String $title, Array $reque_debt) {
+        public function createPIX(String $title, Array $debt_info) {
 
             return self::requestPix(
-                function()use($title, $reque_debt){ 
-                    return self::SEND('', 'POST', $title, $reque_debt);
+                function()use($title, $debt_info){ 
+                    return self::SEND(
+                        '', 
+                        'POST', 
+                        $title, 
+                        $debt_info
+                    );
                 }
             );
 
         }
 
-        public function modifyPIX(String $title, Array $reque_debt, Int $exp) {
+        public function modifyPIX(String $title, Array $debt_info, Int $exp) {
 
             return self::requestPix(
-                function()use($title, $reque_debt, $exp){ 
-                    return self::SEND('/'.self::getBarCode($reque_debt['Valor'], $reque_debt['Debt_ID'], $this->COMPANY_ID), 'PUT', $title, $reque_debt, $exp);
+                function()use($title, $debt_info, $exp){ 
+                    return self::SEND(
+                        '/'.self::getBarCode(
+                            $debt_info['Via_Cobranca_Value'] ?? 0, 
+                            $debt_info['Via_Cobranca_ID'] ?? 0, 
+                            $this->COMPANY_ID
+                        ), 
+                        'PUT', 
+                        $title, 
+                        $debt_info, 
+                        $exp
+                    );
                 }
             );
 
         }
 
-        public function getPIX(Array $debt) {
+        public function getPIX(Array $debt_info) {
 
             return self::requestPix(
-                function()use($debt){ 
-                    return self::RECIVE('', 'GET', $debt);
+                function()use($debt_info){ 
+                    return self::RECIVE(
+                        '', 
+                        'GET', 
+                        $debt_info
+                    );
                 }
             );
 
