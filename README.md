@@ -11,7 +11,7 @@
         'convenio',
         'company_id', // CNPJ or Febran
         'segment_number',
-        'P'
+        'T'
     );
 
     $created_pix_info = $bb->createPIX(
@@ -38,32 +38,32 @@ Esta classe é responsável por lidar com armazenamento em cache de arquivos.
 > **Métodos**
 
 - **`getFileName()`** (*`String`*): Obtém o nome completo do arquivo com base na rota e no nome fornecidos.
-  - **`route`** (*String*): A rota do arquivo.
-  - **`name`** (*String*): O nome do arquivo.
+  - **`route`** (*`String`*): A rota do arquivo.
+  - **`name`** (*`String`*): O nome do arquivo.
 
 - **`fileValidTime()`** (*`Bool`*): Verifica se o arquivo em cache ainda é válido com base no limite de tempo.
-  - **`file`** (*String*): O nome completo do arquivo.
-  - **`limit`** (*Int*): O limite de tempo em segundos.
+  - **`file`** (*`String`*): O nome completo do arquivo.
+  - **`limit`** (*`Int`*): O limite de tempo em segundos.
 
 - **`storeCache()`** (*`Mixed`*): Armazena o conteúdo em cache no arquivo especificado.
-  - **`file`** (*String*): O nome completo do arquivo.
-  - **`content`** (*Mixed*): O conteúdo a ser armazenado em cache.
+  - **`file`** (*`String`*): O nome completo do arquivo.
+  - **`content`** (*`Mixed`*): O conteúdo a ser armazenado em cache.
 
 - **`getFile()`** (*`Mixed`*): Obtém o conteúdo armazenado em cache do arquivo especificado.
-  - **`file`** (*String*): O nome completo do arquivo.
+  - **`file`** (*`String`*): O nome completo do arquivo.
 
 - **`getCache()`** (*`Mixed`*): Obtém o conteúdo em cache com base na rota e no nome do arquivo.
-  - **`route`** (*String*): A rota do arquivo.
-  - **`name`** (*String*): O nome do arquivo.
-  - **`limit`** (*Int*): O limite de tempo em segundos.
-  - **`content`** (*Mixed*): O conteúdo a ser armazenado em cache, se necessário.
+  - **`route`** (*`String`*): A rota do arquivo.
+  - **`name`** (*`String`*): O nome do arquivo.
+  - **`limit`** (*`Int`*): O limite de tempo em segundos.
+  - **`content`** (*`Mixed`*): O conteúdo a ser armazenado em cache, se necessário.
 
 - **`getConditionalCache()`** (*`Mixed`*): Obtém o conteúdo em cache condicionalmente com base na rota, no nome do arquivo e em uma função condicional.
-  - **`route`** (*String*): A rota do arquivo.
-  - **`name`** (*String*): O nome do arquivo.
-  - **`limit`** (*Int*): O limite de tempo em segundos.
-  - **`function`** (*Callable*): A função a ser executada para obter o conteúdo em caso de falha no cache.
-  - **`error_case`** (*Callable*): A função que avalia se a resposta é um caso de erro.
+  - **`route`** (*`String`*): A rota do arquivo.
+  - **`name`** (*`String`*): O nome do arquivo.
+  - **`limit`** (*`Int`*): O limite de tempo em segundos.
+  - **`function`** (*`Callable`*): A função a ser executada para obter o conteúdo em caso de falha no cache.
+  - **`error_case`** (*`Callable`*): A função que avalia se a resposta é um caso de erro.
   
 <br/>
 
@@ -74,23 +74,23 @@ Esta classe fornece métodos para realizar chamadas de API e obter dados.
 > **Métodos**
 
 - **`postFieldsEncode()`**: (*`String|Array`*): Codifica os campos de postagem com base no tipo de codificação especificado.
-  - **`encode`** (*String*): O tipo de codificação, que pode ser "json" ou "x-www-form-urlencoded".
-  - **`input`** (*Array*): Os campos de postagem a serem codificados.
+  - **`encode`** (*`String`*): O tipo de codificação, que pode ser "json" ou "x-www-form-urlencoded".
+  - **`input`** (*`Array`*): Os campos de postagem a serem codificados.
 
 - **`RUN()`**: (*`Array`*): Executa uma chamada de API usando o cURL.
-  - **`link`** (*String*): O link da API.
-  - **`method`** (*String*, opcional): O método da solicitação, padrão é "GET".
-  - **`headers`** (*Array*, opcional): Os cabeçalhos da solicitação, padrão é uma matriz vazia.
-  - **`post`** (*Array*, opcional): Os campos de postagem da solicitação, padrão é uma matriz vazia.
-  - **`send_type`** (*String*, opcional): O tipo de envio dos dados, pode ser "json" ou "x-www-form-urlencoded", padrão é "json".
-  - **`timeout`** (*Int*, opcional): O tempo limite da solicitação em segundos, padrão é 180.
+  - **`link`** (*`String`*): O link da API.
+  - **`method`** (*`String`*, *opcional*): O método da solicitação, padrão é "GET".
+  - **`headers`** (*`Array`*, *opcional*): Os cabeçalhos da solicitação, padrão é uma matriz vazia.
+  - **`post`** (*`Array`*, *opcional*): Os campos de postagem da solicitação, padrão é uma matriz vazia.
+  - **`send_type`** (*`String`*, *opcional*): O tipo de envio dos dados, pode ser "json" ou "x-www-form-urlencoded", padrão é "json".
+  - **`timeout`** (*`Int`*, *opcional*): O tempo limite da solicitação em segundos, padrão é 180.
 
 - **`getOAuth()`**: (*`?Array`*): Obtém um token OAuth condicionalmente usando a classe Cache.
-  - **`route`** (*String*): A rota da API para obter o token OAuth.
-  - **`authorization`** (*String*): A string de autorização para autenticação.
-  - **`grant_type`** (*String*): O tipo de concessão do token OAuth.
-  - **`scope`** (*String*): O escopo do token OAuth.
-  - **`limit`** (*Int*, opcional): O limite de tempo em segundos para manter o token em cache, padrão é 475.
+  - **`route`** (*`String`*): A rota da API para obter o token OAuth.
+  - **`authorization`** (*`String`*): A string de autorização para autenticação.
+  - **`grant_type`** (*`String`*): O tipo de concessão do token OAuth.
+  - **`scope`** (*`String`*): O escopo do token OAuth.
+  - **`limit`** (*`Int`*, *opcional*): O limite de tempo em segundos para manter o token em cache, padrão é 475.
 
 <br/>
 
