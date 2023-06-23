@@ -6,6 +6,8 @@
 
     class Api {
 
+        // Codifica os campos de acordo com o tipo especificado.
+        // Encode the fields based on the specified type.
         public static function postFieldsEncode(String $encode, Array $input): String|Array {
             switch ($encode) {
                 case 'json': return json_encode($input);
@@ -13,16 +15,18 @@
                 default: return $input;
             }
         }
-
+    
+        // Executa uma requisição cURL e retorna a resposta como um array.
+        // Perform a cURL request and return the response as an array.
         public static function RUN(String $link, String $method = 'GET', Array $headers = [], Array $post = [], String $send_type = 'json', Int $timeout = 180): Array {
             $cURL = curl_init();
-
+    
             curl_setopt_array($cURL, [
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
-
+    
                 CURLOPT_URL => $link,
                 CURLOPT_TIMEOUT => $timeout,
                 CURLOPT_HTTPHEADER => $headers,
@@ -32,14 +36,16 @@
             
             $return = curl_exec($cURL);
             curl_close($cURL);
-
+    
             $cURLError = curl_error($cURL);
             if($cURLError) return ['ErrorCURL' => $cURLError];
             if(is_null($return)) return ['ErrorCURL' => 'Empty return'];
-
+    
             return json_decode($return, true);
         }
-
+    
+        // Obtém o token de autenticação OAuth e armazena em cache.
+        // Get the OAuth authentication token and store it in cache.
         public static function getOAuth(String $route, String $authorization, String $grant_type, String $scope, Int $limit = 475): ?Array {
             
             return Cache::getConditionalCache(
@@ -62,13 +68,13 @@
                     );
                 },
                 function($response){
-
+    
                     if(!is_array($response)) return false;
                     return isset($response['access_token']);
                     
                 }
             );
-
+    
         }
-
+    
     }
